@@ -29,12 +29,14 @@ object SlickDistinctBug extends App {
 
     }.flatMap { _ =>
 
-      val filterQuery: Query[Rep[String], String, Seq] =
-        users.filter(_.city like "M%").map(_.city).distinct
+      // val filterQuery: Query[Rep[String], String, Seq] =
+      //   users.filter(_.city like "M%").map(_.city).distinct
+      val filterQuery: Query[Rep[User], User, Seq] =
+        users.distinct
 
       println("Generated SQL for filter query:\n" + filterQuery.result.statements)
 
-      println("Distinct cities starts with 'M':")
+      println("Distinct users")
       db.run(filterQuery.result.map(println))
 
     }
