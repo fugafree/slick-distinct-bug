@@ -1,6 +1,6 @@
-name := "hello-slick"
+name := "slick-distinct-bug"
 
-mainClass in Compile := Some("HelloSlick")
+mainClass in Compile := Some("SlickDistinctBug")
 
 libraryDependencies ++= List(
   "com.typesafe.slick" %% "slick" % "3.1.1",
