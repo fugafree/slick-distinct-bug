@@ -1,1 +1,5 @@
-This is a template for [Typesafe Activator](http://typesafe.com/platform/getstarted).
+
+Demonstrates the Slick "distinct" bug.
+
+Issue:
+[slick/slick#1689](https://github.com/slick/slick/issues/1689)
