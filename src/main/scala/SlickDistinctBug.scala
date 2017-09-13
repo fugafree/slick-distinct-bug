@@ -19,7 +19,9 @@ object SlickDistinctBug extends App {
       // Insert some suppliers
       suppliers += (101, "Acme, Inc.", "Groundsville"),
       suppliers += ( 49, "Superior Coffee", "Mendocino"),
-      suppliers += (150, "The High Ground", "Meadows")
+      suppliers += (150, "The High Ground", "Meadows"),
+      suppliers += ( 21, "The Hole", "New York"),
+      suppliers += ( 81, "Great Sup", "Meadows")
     )
 
     val setupFuture: Future[Unit] = db.run(setupAction)
@@ -40,13 +42,13 @@ object SlickDistinctBug extends App {
       /* Filtering / Where */
 
       // Construct a query where the price of Coffees is > 9.0
-      val filterQuery: Query[Suppliers, (Int, String, String), Seq] =
-        suppliers.filter(_.city like "M%")
+      val filterQuery: Query[Rep[String], String, Seq] =
+        suppliers.filter(_.city like "M%").map(_.city).distinct
 
       // Print the SQL for the filter query
       println("Generated SQL for filter query:\n" + filterQuery.result.statements)
 
-      println("Suppliers with city name starts with 'M':")
+      println("Distinct cities starts with 'M':")
       // Execute the query and print the Seq of results
       db.run(filterQuery.result.map(println))
 
