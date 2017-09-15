@@ -13,16 +13,29 @@ object SlickDistinctBug extends App {
   val db = Database.forConfig("h2mem1")
   try {
 
-    println("\n\n ####### Start of test #######")
+    println("\n\n####### Start of test #######")
 
     val users: TableQuery[Users] = TableQuery[Users]
 
     val setupAction: DBIO[Unit] = DBIO.seq(
       users.schema.create,
-      users += User("John Doe", 167, true, "Meadows"),
-      users += User("John Doe", 167, true, "Meadows"),
-      users += User("Fred Smith", 189, false, "Mendocino"),
-      users += User("Big Guy", 195, true, "New York")
+      users += User(
+        name = "John Doe",
+        height = 167,
+        hasDog = true,
+        city = "Meadows"),
+      users += User(
+        name = "Fred Smith",
+        height = 189,
+        hasDog = false,
+        city = "Mendocino"
+      ),
+      users += User(
+        name = "Big Guy",
+        height = 195,
+        hasDog = true,
+        city = "New York"
+      )
     )
 
     runAndWait(setupAction)
@@ -32,22 +45,20 @@ object SlickDistinctBug extends App {
 
     val distinctQuery: Query[Rep[User], User, Seq] = users.filter(_.city like "M%").distinct
 
-    println("Generated SQL queries for distinct statement. These are from the same query with multiple .result call:")
-    println(distinctQuery.result.statements)
-    println(distinctQuery.result.statements)
-    println(distinctQuery.result.statements)
-    println(distinctQuery.result.statements)
-    println(distinctQuery.result.statements)
-    println(distinctQuery.result.statements)
+    println("Distinct query:")
+    for (i <- 1 to 6) {
+      val action = distinctQuery.result
+      print(s"SQL to run: ${action.statements}")
 
-    println("Distinct users:")
-    try {
-      val distinctResult = runAndWait(distinctQuery.result)
-      println(s"Result of distinct query: $distinctResult")
-    } catch {
-      case e: Throwable =>
-        println(s"!!!!!! Distinct query run failed with exception: ${e.getMessage}")
-        println(s"       Cause: ${e.getCause.getMessage}")
+      try {
+        val distinctResult = runAndWait(distinctQuery.result)
+        println(s" Success. Number of users: ${distinctResult.length}")
+      } catch {
+        case e: Throwable =>
+          // to see full stack trace uncomment this:
+          // throw e
+          println(s"\n   !! FAILED --- Distinct query run failed with exception: ${e.getMessage}, Cause: ${e.getCause.getMessage}")
+      }
     }
 
   } finally {
